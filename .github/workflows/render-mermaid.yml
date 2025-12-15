@@ -18,8 +18,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Mermaid CLI
-        run: npm install -g @mermaid-js/mermaid-cli
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Mermaid CLI v9
+        run: npm install -g @mermaid-js/mermaid-cli@9.1.3
 
       - name: Render Mermaid files to SVG
         run: |
