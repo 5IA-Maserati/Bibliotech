@@ -1,0 +1,40 @@
+name: Render Mermaid diagrams
+
+permissions:
+  contents: write
+
+on:
+  push:
+    paths:
+      - "docs/diagrams/**/*.mmd"
+      - "docs/diagrams/**/*.mermaid"
+  workflow_dispatch:
+
+jobs:
+  render-mermaid:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Render Mermaid files to SVG
+        run: |
+          shopt -s globstar
+          for file in docs/diagrams/**/*.{mmd,mermaid}; do
+            [ -f "$file" ] || continue
+            output="${file%.*}.svg"
+            echo "Rendering $file → $output"
+            mmdc -i "$file" -o "$output" --backgroundColor transparent
+          done
+
+      - name: Commit updated SVGs
+        run: |
+          git config user.name "mermaid-bot"
+          git config user.email "mermaid-bot@users.noreply.github.com"
+          git add docs/diagrams/**/*.svg
+          git diff --cached --quiet || git commit -m "chore(diagrams): update rendered mermaid SVGs"
+          git push
