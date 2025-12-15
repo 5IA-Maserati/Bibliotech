@@ -28,7 +28,7 @@ jobs:
             [ -f "$file" ] || continue
             output="${file%.*}.svg"
             echo "Rendering $file → $output"
-            mmdc -i "$file" -o "$output" --backgroundColor transparent
+            mmdc -i "$file" -o "$output" --backgroundColor transparent --no-sandbox
           done
 
       - name: Commit updated SVGs
